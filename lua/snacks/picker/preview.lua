@@ -101,7 +101,10 @@ function M.file(ctx)
     vim.fn.bufload(ctx.item.buf)
   end
 
-  if ctx.item.buf and vim.api.nvim_buf_is_loaded(ctx.item.buf) then
+  -- Avoid using loaded buffer as preview to prevent keymaps conflict
+  -- Make minimal changes to avoid conflict with the upstream
+  -- if ctx.item.buf and vim.api.nvim_buf_is_loaded(ctx.item.buf) then
+  if false then
     if not title then
       local name = vim.api.nvim_buf_get_name(ctx.item.buf)
       title = uv.fs_stat(name) and vim.fn.fnamemodify(name, ":t") or name
@@ -176,6 +179,11 @@ function M.file(ctx)
       end
       ctx.preview:set_lines(lines)
       ctx.preview:highlight({ file = path, ft = ctx.picker.opts.previewers.file.ft, buf = ctx.buf })
+
+      -- Set conceallevel to 0 for JSON file types
+      if ft and vim.tbl_contains({ "json", "jsonc", "json5" }, ft) then
+        ctx.preview:wo({ conceallevel = 0 })
+      end
     end
   end
   ctx.preview:loc()
