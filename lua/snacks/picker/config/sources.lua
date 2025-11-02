@@ -208,6 +208,107 @@ M.files = {
   supports_live = true,
 }
 
+---@class snacks.picker.gh.Config: snacks.picker.Config
+---@field app? string GitHub App author
+---@field assignee? string filter by assignee
+---@field author? string filter by author
+---@field jq? string custom jq filter
+---@field label? string filter by label(s)
+---@field limit? number number of items to fetch (default: 50)
+---@field repo? string GitHub repository (owner/repo). Defaults to current git repo
+
+---@class snacks.picker.gh.issue.Config: snacks.picker.gh.Config
+---@field state "open" | "closed" | "all"
+---@field mention? string filter by mention
+---@field milestone? string filter by milestone
+M.gh_issue = {
+  title = "  Issues",
+  finder = "gh_issue",
+  format = "gh_format",
+  preview = "gh_preview",
+  sort = { fields = { "score:desc", "idx" } },
+  supports_live = true,
+  live = true,
+  confirm = "gh_actions",
+  win = {
+    input = {
+      keys = {
+        ["<a-b>"] = { "gh_browse", mode = { "n", "i" } },
+        ["<c-y>"] = { "gh_yank", mode = { "n", "i" } },
+      },
+    },
+    list = {
+      keys = {
+        ["y"] = { "gh_yank", mode = { "n", "x" } },
+      },
+    },
+  },
+}
+
+---@class snacks.picker.gh.pr.Config: snacks.picker.gh.Config
+---@field state "open" | "closed" | "merged" | "all"
+---@field draft? boolean filter draft PRs
+---@field base? string filter by base branch
+M.gh_pr = {
+  title = "  Pull Requests",
+  finder = "gh_pr",
+  format = "gh_format",
+  preview = "gh_preview",
+  sort = { fields = { "score:desc", "idx" } },
+  supports_live = true,
+  live = true,
+  confirm = "gh_actions",
+  win = {
+    input = {
+      keys = {
+        ["<a-b>"] = { "gh_browse", mode = { "n", "i" } },
+        ["<c-y>"] = { "gh_yank", mode = { "n", "i" } },
+      },
+    },
+    list = {
+      keys = {
+        ["y"] = { "gh_yank", mode = { "n", "x" } },
+      },
+    },
+  },
+}
+
+---@class snacks.picker.gh.diff.Config: snacks.picker.Config
+---@field group? boolean group changes by file (when false, show individual hunks)
+---@field pr number number PR number to diff against
+---@field repo? string GitHub repository (owner/repo). Defaults to current git repo
+M.gh_diff = {
+  title = "  Pull Request Diff",
+  group = true,
+  finder = "gh_diff",
+  format = "file",
+  preview = "diff",
+}
+
+---@class snacks.picker.gh.reactions.Config: snacks.picker.Config
+---@field number number issue or PR number
+---@field repo string GitHub repository (owner/repo). Defaults to current git repo
+M.gh_reactions = {
+  layout = { preset = "select", layout = { max_width = 50 } },
+  title = "  Reactions",
+  main = { current = true },
+  group = true,
+  finder = "gh_reactions",
+  format = "gh_format_reaction",
+}
+
+---@class snacks.picker.gh.labels.Config: snacks.picker.Config
+---@field number number issue or PR number
+---@field repo string GitHub repository (owner/repo). Defaults to current git repo
+M.gh_labels = {
+  layout = { preset = "select", layout = { max_width = 50 } },
+  title = "  Labels",
+  main = { current = true },
+  group = true,
+  finder = "gh_labels",
+  format = "gh_format_label",
+}
+
 --- Git arguments are use like this:
 ---  * git [<cmd_args>] <cmd> [<args>]
 ---  * cmd may be `status`, `log`, `diff`, etc.
@@ -335,12 +436,22 @@ M.git_status = {
 
 ---@class snacks.picker.git.diff.Config: snacks.picker.git.Config
 ---@field group? boolean group changes by file (when false, show individual hunks)
+---@field staged? boolean show staged changes
 ---@field base? string base commit/branch/tag to diff against (default: HEAD)
 M.git_diff = {
   group = false,
   finder = "git_diff",
-  format = "file",
+  format = "git_status",
   preview = "diff",
+  matcher = { sort_empty = true },
+  win = {
+    input = {
+      keys = {
+        ["<Tab>"] = { "git_stage", mode = { "n", "i" } },
+        ["<c-r>"] = { "git_restore", mode = { "n", "i" } },
+      },
+    },
+  },
 }
 
 ---@class snacks.picker.grep.Config: snacks.picker.proc.Config

@@ -11,7 +11,7 @@ local M = {}
 ---@alias snacks.picker.Pos {[1]:number, [2]:number}
 ---@alias snacks.picker.toggle {icon?:string, enabled?:boolean, value?:boolean}
 
---- Generic filter used by finders to pre-filter items
+--- Generic filter used by some finders to pre-filter items
 ---@class snacks.picker.filter.Config
 ---@field cwd? boolean|string only show files for the given cwd
 ---@field buf? boolean|number only show items for the current or given buffer
@@ -75,6 +75,7 @@ local M = {}
 ---@field limit? number when set, the finder will stop after finding this number of items. useful for live searches
 ---@field limit_live? number when set, the finder will stop after finding this number of items during live searches. useful for performance
 ---@field ui_select? boolean set `vim.ui.select` to a snacks picker
+---@field filter? snacks.picker.filter.Config generic filter used by some finders
 --- Source definition
 ---@field items? snacks.picker.finder.Item[] items to show instead of using a finder
 ---@field format? string|snacks.picker.format|string format function or preset
@@ -262,7 +263,7 @@ local defaults = {
         ["gg"] = "list_top",
         ["j"] = "list_down",
         ["k"] = "list_up",
-        ["q"] = "close",
+        ["q"] = "cancel",
       },
       b = {
         minipairs_disable = true,
@@ -311,7 +312,7 @@ local defaults = {
         ["i"] = "focus_input",
         ["j"] = "list_down",
         ["k"] = "list_up",
-        ["q"] = "close",
+        ["q"] = "cancel",
         ["zb"] = "list_scroll_bottom",
         ["zt"] = "list_scroll_top",
         ["zz"] = "list_scroll_center",
@@ -325,7 +326,7 @@ local defaults = {
     preview = {
       keys = {
         ["<Esc>"] = "cancel",
-        ["q"] = "close",
+        ["q"] = "cancel",
         ["i"] = "focus_input",
         ["<a-w>"] = "cycle_win",
       },
