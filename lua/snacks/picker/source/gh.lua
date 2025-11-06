@@ -15,10 +15,15 @@ M.actions = setmetatable({}, {
     local action = {
       desc = Actions.actions[k].desc,
       action = function(picker, item, action)
+        local items = picker:selected({ fallback = true })
+        if item.gh_item then
+          item = item.gh_item
+          items = { item }
+        end
         ---@diagnostic disable-next-line: param-type-mismatch
         return Actions.actions[k].action(item, {
           picker = picker,
-          items = picker:selected({ fallback = true }),
+          items = items,
           action = action,
         })
       end,
@@ -141,12 +146,16 @@ function M.diff(opts, ctx)
   if opts.repo then
     vim.list_extend(args, { "--repo", opts.repo })
   end
-  opts.previewers.diff.style = "fancy"
+
+  opts.previewers.diff.style = "fancy" -- only fancy style support inline review comments
+
   local Render = require("snacks.gh.render")
   local Diff = require("snacks.picker.source.diff")
   ---@async
   return function(cb)
     local item = Api.get({ type = "pr", repo = opts.repo, number = opts.pr })
+
+    -- fetch on the main thread since rendering uses non-fast APIs
     local annotations = ctx.async:schedule(function()
       return Render.annotations(item)
     end)
@@ -160,6 +169,7 @@ function M.diff(opts, ctx)
       }),
       ctx
     )(function(it)
+      it.gh_item = item
       cb(it)
     end)
   end
@@ -300,6 +310,19 @@ function M.format(item, picker)
   end
 
   return ret
+end
+
+---@param ctx snacks.picker.preview.ctx
+function M.preview_diff(ctx)
+  Snacks.picker.preview.diff(ctx)
+  local item = ctx.item.gh_item ---@type snacks.picker.gh.Item?
+  if item then
+    vim.b[ctx.buf].snacks_gh = {
+      repo = item.repo,
+      type = item.type,
+      number = item.number,
+    }
+  end
 end
 
 ---@param ctx snacks.picker.preview.ctx
