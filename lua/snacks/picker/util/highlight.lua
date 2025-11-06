@@ -314,11 +314,10 @@ end
 ---@param line snacks.picker.Highlight[]
 ---@param max_width number
 function M.resolve(line, max_width)
-  local offset = 0
-  local width = 0
-  local resolve ---@type number?
-
   while true do
+    local offset = 0
+    local width = 0
+    local resolve ---@type number?
     for t, text in ipairs(line) do
       local w = M.offset({ text }, { char_idx = true })
       if not resolve and type(text) == "table" and text.resolve then
@@ -336,13 +335,11 @@ function M.resolve(line, max_width)
       local ret = {} ---@type snacks.picker.Highlight[]
       vim.list_extend(ret, line, 1, resolve - 1)
       offset = M.offset(ret)
-      vim.list_extend(ret, line[resolve].resolve(max_width - width))
+      vim.list_extend(ret, line[resolve].resolve(math.max(max_width - width, 1)))
       local diff = M.offset(ret) - offset
       vim.list_extend(ret, line, resolve + 1)
       M.fix_offset(ret, diff, resolve + 1)
       line = ret
-      ret = {}
-      resolve = nil
     else
       return line
     end
@@ -378,12 +375,14 @@ end
 
 ---@param line snacks.picker.Highlight[]
 ---@param hl_group string
-function M.add_eol(line, hl_group)
+---@param offset? number
+function M.add_eol(line, hl_group, offset)
   line[#line + 1] = {
     col = M.offset(line),
     virt_text = { { string.rep(" ", 1000), hl_group } },
     virt_text_pos = "overlay",
     hl_mode = "replace",
+    virt_text_win_col = offset,
     virt_text_repeat_linebreak = true,
   }
   return line

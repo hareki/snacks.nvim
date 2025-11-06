@@ -90,19 +90,26 @@
 ---@field context? string
 ---@field state? "SUCCESS" | "FAILURE" | "PENDING"
 
+---@class snacks.gh.review.Thread
+---@field id string
+---@field diffSide "LEFT" | "RIGHT"
+---@field comments {id: string}[]
+
 ---@class snacks.gh.Review
 ---@field id string
 ---@field author snacks.gh.User
 ---@field authorAssociation string
 ---@field body string
+---@field createdAt string
 ---@field submittedAt string
 ---@field submitted number
+---@field created number
 ---@field reactionGroups? snacks.gh.Reaction[]
 ---@field state "APPROVED" | "CHANGES_REQUESTED" | "COMMENTED" | "DISMISSED" | "PENDING"
 ---@field commit? {oid: string}
 ---@field comments? snacks.gh.Comment[]
 
----@alias snacks.gh.Thread snacks.gh.Comment|snacks.gh.Review|{created: number}
+---@alias snacks.gh.Thread snacks.gh.Comment|snacks.gh.Review
 
 ---@class snacks.gh.Item
 ---@field number number
@@ -128,6 +135,7 @@
 ---@field headRefName? string
 ---@field isDraft? boolean
 ---@field reviews? snacks.gh.Review[]
+---@field reviewThreads? snacks.gh.review.Thread[]
 
 ---@class snacks.gh.Commit
 ---@field oid string
