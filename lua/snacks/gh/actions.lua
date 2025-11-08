@@ -15,6 +15,7 @@ local M = {}
 ---@field opts snacks.gh.cli.Action
 ---@field picker? snacks.Picker
 ---@field scratch? snacks.win
+---@field main? number
 ---@field input? string
 
 ---@alias snacks.gh.action.fn fun(item?: snacks.picker.gh.Item, ctx: snacks.gh.action.ctx)
@@ -299,6 +300,10 @@ M.actions.gh_diff_comment = {
   title = "Comment on diff in {type} #{number}",
   priority = 150,
   icon = " ",
+  enabled = function(item, ctx)
+    local m = get_meta(item, ctx)
+    return m and m.diff ~= nil or false
+  end,
   action = function(item, ctx)
     local m, meta, buf = get_meta(item, ctx)
     if not (meta and buf and m and m.diff) then
@@ -723,6 +728,7 @@ function M.run(item, action, ctx)
     args = args,
     opts = action,
     picker = ctx.picker,
+    main = ctx.main,
   }
   if action.edit then
     return M.edit(cli_ctx)
@@ -867,9 +873,10 @@ function M.edit(ctx)
     template = table.concat(fm, "\n") .. template
   end
 
+  local height = config.scratch.height or 20
   Snacks.scratch({
     ft = "markdown",
-    icon = Snacks.gh.config().icons.logo,
+    icon = config.icons.logo,
     name = tpl(ctx.opts.title or "{cmd} {type} #{number}"),
     template = tpl(template),
     filekey = {
@@ -879,6 +886,17 @@ function M.edit(ctx)
       id = tpl("{repo}/{type}/{cmd}"),
     },
     win = {
+      relative = "win",
+      width = 0,
+      backdrop = false,
+      height = height,
+      win = ctx.main or vim.api.nvim_get_current_win(),
+      wo = { winhighlight = "NormalFloat:Normal,FloatTitle:SnacksGhScratchTitle,FloatBorder:SnacksGhScratchBorder" },
+      border = "top",
+      row = function(win)
+        local border = win:border_size()
+        return win:parent_size().height - height - border.top - border.bottom
+      end,
       on_win = function()
         vim.schedule(function()
           vim.cmd.startinsert()

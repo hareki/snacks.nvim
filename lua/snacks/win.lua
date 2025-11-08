@@ -304,8 +304,19 @@ function M.new(opts)
       table.insert(self.keys, spec)
     end
   end
+  -- last defined mapping is found first, so for `nowait` to work,
+  -- we need to sort in reverse order
+  table.sort(self.keys, function(a, b)
+    return (a[1] or "") > (b[1] or "")
+  end)
 
   self:on("WinClosed", self.on_close, { win = true })
+  self:on("WinResized", function()
+    if self.backdrop and not self:is_floating() then
+      self.backdrop:close()
+      self.backdrop = nil
+    end
+  end)
 
   -- update window size when resizing
   self:on("VimResized", self.on_resize)
