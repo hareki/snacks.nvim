@@ -117,7 +117,9 @@ function M.filename(item, picker)
       end,
     }
   end
-  if item.pos and item.pos[1] > 0 then
+  local show_pos = false -- Minimal changes to avoid conflicts
+  -- if item.pos and item.pos[1] > 0 then
+  if show_pos then
     ret[#ret + 1] = { ":", "SnacksPickerDelim" }
     ret[#ret + 1] = { tostring(item.pos[1]), "SnacksPickerRow" }
     if item.pos[2] > 0 then
