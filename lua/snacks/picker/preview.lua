@@ -179,6 +179,11 @@ function M.file(ctx)
       end
       ctx.preview:set_lines(lines)
       ctx.preview:highlight({ file = path, ft = ctx.picker.opts.previewers.file.ft, buf = ctx.buf })
+
+      -- Set conceallevel to 0 for JSON file types
+      if ft and vim.tbl_contains({ "json", "jsonc", "json5" }, ft) then
+        ctx.preview:wo({ conceallevel = 0 })
+      end
     end
   end
   ctx.preview:loc()
