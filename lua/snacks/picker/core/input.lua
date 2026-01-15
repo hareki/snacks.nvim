@@ -131,7 +131,7 @@ function M:statuscolumn()
     end
   end
   local pattern = self.picker.opts.live and self.filter.pattern or self.filter.search
-  if pattern ~= "" then
+  if pattern ~= "" and self.picker.opts.show_pattern ~= false then
     if #pattern > 20 then
       pattern = Snacks.picker.util.truncate(pattern, 20)
     end
