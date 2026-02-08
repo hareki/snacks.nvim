@@ -67,7 +67,6 @@ function M.clear()
   vim.lsp.buf.clear_references()
 end
 
----@private
 function M.update()
   local buf = vim.api.nvim_get_current_buf()
   timer:start(config.debounce, 0, function()
