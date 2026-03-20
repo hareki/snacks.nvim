@@ -280,8 +280,22 @@ function M.preview(ctx)
         lines[#lines + 1] = "- **server capabilities**:"
         for _, method in ipairs(methods) do
           local cap = vim.lsp.protocol._request_name_to_server_capability[method]
-          if vim.tbl_get(client.server_capabilities, unpack(cap)) then
-            lines[#lines + 1] = ("  *  **%s**: `%s`"):format(method, true)
+          local value = vim.tbl_get(client.server_capabilities, unpack(cap))
+          if value then
+            local details = {} ---@type string[]
+            if type(value) == "table" then
+              if method == "workspace/executeCommand" and type(value.commands) == "table" then
+                details = value.commands --[[@as string[] ]]
+              elseif method == "textDocument/codeAction" and type(value.codeActionKinds) == "table" then
+                details = value.codeActionKinds --[[@as string[] ]]
+              end
+            end
+            lines[#lines + 1] = ("  *  **%s**:%s"):format(method, #details > 0 and "" or " `true`")
+            if #details > 0 then
+              for _, detail in ipairs(details) do
+                lines[#lines + 1] = "    - `" .. detail .. "`"
+              end
+            end
           end
         end
       end
