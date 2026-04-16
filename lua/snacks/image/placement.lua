@@ -538,6 +538,14 @@ function M:update()
     self:hide()
     return
   end
+
+  -- Auto-show when hidden and windows become available again
+  if self.hidden then
+    self.hidden = false
+    state = self:state()
+    self._state = state
+  end
+
   self.img:place(self)
 
   self:debug("update")
