@@ -209,6 +209,17 @@ function M:is_concealed(row, col)
       return true
     end
   end
+  -- Also detect conceal_lines set by other plugins via extmarks (e.g. render-markdown.nvim)
+  if vim.fn.has("nvim-0.11") == 1 then
+    for _, mark in
+      ipairs(vim.api.nvim_buf_get_extmarks(self.buf, -1, { row, 0 }, { row, -1 }, { details = true, overlap = true }))
+    do
+      local details = mark[4]
+      if details and details.ns_id ~= ns and details.conceal ~= nil then
+        return true
+      end
+    end
+  end
   return false
 end
 
