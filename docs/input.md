@@ -32,6 +32,7 @@ Better `vim.ui.input`.
 ---@field icon? string
 ---@field icon_pos? snacks.input.Pos
 ---@field prompt_pos? snacks.input.Pos
+---@field start_in_insert? boolean
 {
   icon = " ",
   icon_hl = "SnacksInputIcon",
@@ -39,6 +40,7 @@ Better `vim.ui.input`.
   prompt_pos = "title",
   win = { style = "input" },
   expand = true,
+  start_in_insert = true,
 }
 ```
 

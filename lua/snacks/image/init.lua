@@ -81,6 +81,10 @@ local defaults = {
     float = true,
     max_width = 80,
     max_height = 40,
+    -- filetypes to skip when attaching the inline image renderer.
+    -- useful to opt out of supported filetypes (e.g. `markdown`).
+    ---@type string[]
+    excluded_filetypes = {},
     -- Set to `true`, to conceal the image text when rendering inline.
     -- (experimental)
     ---@param lang string tree-sitter language
@@ -283,6 +287,9 @@ function M.setup(ev)
       group = group,
       callback = function(e)
         local ft = vim.bo[e.buf].filetype
+        if vim.tbl_contains(M.config.doc.excluded_filetypes or {}, ft) then
+          return
+        end
         local lang = vim.treesitter.language.get_lang(ft)
         if vim.tbl_contains(langs, lang) then
           vim.schedule(function()

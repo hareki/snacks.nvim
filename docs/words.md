@@ -73,3 +73,9 @@ Snacks.words.is_enabled(opts)
 ---@param cycle? boolean
 Snacks.words.jump(count, cycle)
 ```
+
+### `Snacks.words.update()`
+
+```lua
+Snacks.words.update()
+```

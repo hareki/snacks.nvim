@@ -106,6 +106,10 @@ In case of issues, make sure to run `:checkhealth snacks`.
     float = true,
     max_width = 80,
     max_height = 40,
+    -- filetypes to skip when attaching the inline image renderer.
+    -- useful to opt out of supported filetypes (e.g. `markdown`).
+    ---@type string[]
+    excluded_filetypes = {},
     -- Set to `true`, to conceal the image text when rendering inline.
     -- (experimental)
     ---@param lang string tree-sitter language
