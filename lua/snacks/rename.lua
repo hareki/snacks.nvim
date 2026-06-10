@@ -108,7 +108,7 @@ function M.on_rename_file(from, to, rename)
 
   for _, client in ipairs(clients) do
     if client:supports_method("workspace/didRenameFiles") then
-      client.notify("workspace/didRenameFiles", changes)
+      client:notify("workspace/didRenameFiles", changes)
     end
   end
 end
