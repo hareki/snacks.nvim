@@ -64,9 +64,9 @@ M.transforms = {
       return
     end
     img.content = vim.base64.decode(data)
-    img.content_id = data:sub(1, 20)
+    img.content_id = data:sub(1, 20):gsub("[^%w]", "")
     img.src = nil
-    img.ext = ft:match("^image/(%w+)$") or "png"
+    img.ext = ft:match("^image/([%w.-]+)") or "png"
   end,
   latex = function(img, ctx)
     if not (img.content and img.ext == "math.tex") then
@@ -312,7 +312,7 @@ function M._img(ctx)
   assert(img.src or img.content, "no image src or content")
 
   local transform = M.transforms[ctx.lang]
-  if img.src and img.src:find("^data:%w+/%w+;base64,") then
+  if img.src and img.src:find("^data:.-;base64,") then
     transform = M.transforms["data_img"]
   end
   if transform then
