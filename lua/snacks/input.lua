@@ -19,7 +19,6 @@ M.meta = {
 ---@field icon? string
 ---@field icon_pos? snacks.input.Pos
 ---@field prompt_pos? snacks.input.Pos
----@field start_in_insert? boolean
 local defaults = {
   icon = " ",
   icon_hl = "SnacksInputIcon",
@@ -27,7 +26,6 @@ local defaults = {
   prompt_pos = "title",
   win = { style = "input" },
   expand = true,
-  start_in_insert = true,
 }
 
 Snacks.util.set_hl({
@@ -254,11 +252,9 @@ function M.input(opts, on_confirm)
 
   highlight()
 
-  if opts.start_in_insert then
-    vim.api.nvim_win_call(win.win, function()
-      vim.cmd("startinsert!")
-    end)
-  end
+  vim.api.nvim_win_call(win.win, function()
+    vim.cmd("startinsert!")
+  end)
 
   vim.fn.prompt_setcallback(win.buf, function(text)
     confirm(text)
