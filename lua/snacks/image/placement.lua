@@ -133,6 +133,8 @@ function M:error()
     end
   end
   local lines = vim.split(msg, "\n")
+  -- set_lines keeps extmarks, which would leave progress()'s loading text beside the error
+  vim.api.nvim_buf_clear_namespace(self.buf, ns, 0, -1)
   vim.bo[self.buf].modifiable = true
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
   vim.bo[self.buf].modifiable = false
@@ -161,13 +163,15 @@ function M:progress()
         return
       end
       vim.api.nvim_buf_clear_namespace(self.buf, ns, 0, -1)
-      vim.api.nvim_buf_set_extmark(self.buf, ns, 0, 0, {
+      local eid = vim.api.nvim_buf_set_extmark(self.buf, ns, 0, 0, {
         virt_text = {
           { Snacks.util.spinner(), "SnacksImageSpinner" },
           { " " },
           { self.img._convert:current().name .. " loading …", "SnacksImageLoading" },
         },
       })
+      -- Tracked like the image's own marks, so the first render replaces it and del() drops it
+      self.eids = { eid }
     end)
   )
 end
